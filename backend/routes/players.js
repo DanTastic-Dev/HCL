@@ -1,9 +1,10 @@
 const express = require("express");
-const router = express.Router();  //a router is created that is used to manage the requests like the get / post etc
+const verifyAdminPassword = require("../middleware/verifyAdminPassword");
+const router = express.Router();
 const Player = require("../models/Player");
 
-// POST - Create a new player
-router.post("/add", async (req, res) => {
+// ✅ POST - Create a new player
+router.post("/add", verifyAdminPassword, async (req, res) => {
     try {
         const {
             name,
@@ -26,7 +27,7 @@ router.post("/add", async (req, res) => {
             ballsFaced: parseInt(ballsFaced),
             wickets: parseInt(wickets),
             runsGiven: parseInt(runsGiven),
-            overs: parseFloat(overs)   // ✅ This is the fix
+            overs: parseFloat(overs)
         });
 
         await newPlayer.save();
@@ -40,19 +41,18 @@ router.post("/add", async (req, res) => {
     }
 });
 
-
-// GET a player by ID
-router.get("/:id", async (req, res) => {
+// ✅ GET a player by ID (with password protection!)
+router.get("/:id", verifyAdminPassword, async (req, res) => {
     try {
         const player = await Player.findById(req.params.id);
         if (!player) return res.status(404).json({ message: "Player not found" });
         res.json(player);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
-// GET: All players (optional helper)
+// ✅ GET all players (no password needed)
 router.get("/", async (req, res) => {
     try {
         const players = await Player.find();
@@ -62,13 +62,13 @@ router.get("/", async (req, res) => {
     }
 });
 
-// PUT - Update a player by ID
-router.put("/:id", async (req, res) => {
+// ✅ PUT - Update a player by ID
+router.put("/:id", verifyAdminPassword, async (req, res) => {
     try {
         const updatedPlayer = await Player.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true, runValidators: true }  // runValidators ensures schema validation on update
+            { new: true, runValidators: true }
         );
         if (!updatedPlayer) return res.status(404).json({ message: "Player not found" });
         res.json({ message: "Player updated successfully", player: updatedPlayer });
@@ -81,8 +81,8 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-// DELETE a player by ID
-router.delete("/:id", async (req, res) => {
+// ✅ DELETE a player by ID
+router.delete("/:id", verifyAdminPassword, async (req, res) => {
     try {
         const deletedPlayer = await Player.findByIdAndDelete(req.params.id);
         if (!deletedPlayer) {
