@@ -42,13 +42,17 @@ const TopPerformers = ({ players }) => {
     useEffect(() => {
         if (!players || players.length === 0) return;
 
-        const imageOf = (player) => localStorage.getItem(`player-image-${player._id}`) || "/default-avatar.png";
+        const imageOf = (player) =>
+            player?._id ? localStorage.getItem(`player-image-${player._id}`) || "/default-avatar.png" : "/default-avatar.png";
 
-        const bestBatter = [...players].sort((a, b) => b.runs - a.runs)[0];
-        const bestBowler = [...players].sort((a, b) => b.wickets - a.wickets)[0];
-        const bestAllrounder = [...players]
+        const validPlayers = players.filter(Boolean);
+
+        const bestBatter = [...validPlayers].sort((a, b) => b.runs - a.runs)[0];
+        const bestBowler = [...validPlayers].sort((a, b) => b.wickets - a.wickets)[0];
+
+        const bestAllrounder = [...validPlayers]
             .filter(p => p.runs > 0 && p.wickets >= 6)
-            .sort((a, b) => { 
+            .sort((a, b) => {
                 const calcScore = (p) => {
                     const batAvg = p.innings - p.notOuts > 0 ? p.runs / (p.innings - p.notOuts) : 0;
                     const strikeRate = p.ballsFaced > 0 ? (p.runs / p.ballsFaced) * 100 : 0;
@@ -62,9 +66,10 @@ const TopPerformers = ({ players }) => {
 
                 return calcScore(b) - calcScore(a);
             })[0];
-        setTopBatter({ ...bestBatter, image: imageOf(bestBatter) });
-        setTopBowler({ ...bestBowler, image: imageOf(bestBowler) });
-        setTopAllrounder({ ...bestAllrounder, image: imageOf(bestAllrounder) });
+
+        if (bestBatter) setTopBatter({ ...bestBatter, image: imageOf(bestBatter) });
+        if (bestBowler) setTopBowler({ ...bestBowler, image: imageOf(bestBowler) });
+        if (bestAllrounder) setTopAllrounder({ ...bestAllrounder, image: imageOf(bestAllrounder) });
     }, [players]);
 
     const Card = ({ title, player, lines }) => (
@@ -79,7 +84,13 @@ const TopPerformers = ({ players }) => {
         </div>
     );
 
-    if (!topBatter || !topBowler || !topAllrounder) return null;
+    if (!topBatter || !topBowler || !topAllrounder) {
+        return (
+            <div style={{ textAlign: "center", color: "gray", marginTop: "2rem" }}>
+                Not enough data to show top performers.
+            </div>
+        );
+    }
 
     return (
         <div style={{
@@ -89,86 +100,50 @@ const TopPerformers = ({ players }) => {
             flexWrap: "wrap",
             padding: "2rem"
         }}>
-            <div
-                style={{
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.5)';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = 'none';
-                }}
-            >
-                <Card
-                    title="Top Batter"
-                    player={topBatter}
-                    lines={[
-                        `Runs: ${topBatter.runs}`,
-                        `Avg: ${topBatter.innings - topBatter.notOuts > 0
+            <Card
+                title="Top Batter"
+                player={topBatter}
+                lines={[
+                    `Runs: ${topBatter.runs}`,
+                    `Avg: ${
+                        topBatter.innings - topBatter.notOuts > 0
                             ? (topBatter.runs / (topBatter.innings - topBatter.notOuts)).toFixed(2)
                             : "-"
-                        }`,
-                        `SR: ${topBatter.ballsFaced > 0
+                    }`,
+                    `SR: ${
+                        topBatter.ballsFaced > 0
                             ? ((topBatter.runs / topBatter.ballsFaced) * 100).toFixed(2)
                             : "-"
-                        }`
-                    ]}
-                />
-            </div>
-            <div
-                style={{
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.5)';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = 'none';
-                }}
-            >
-                <Card
-                    title="Top Bowler"
-                    player={topBowler}
-                    lines={[
-                        `Wickets: ${topBowler.wickets}`,
-                        `Econ: ${topBowler.overs > 0
+                    }`
+                ]}
+            />
+
+            <Card
+                title="Top Bowler"
+                player={topBowler}
+                lines={[
+                    `Wickets: ${topBowler.wickets}`,
+                    `Econ: ${
+                        topBowler.overs > 0
                             ? (topBowler.runsGiven / topBowler.overs).toFixed(2)
                             : "-"
-                        }`,
-                        `Avg: ${topBowler.wickets > 0
+                    }`,
+                    `Avg: ${
+                        topBowler.wickets > 0
                             ? (topBowler.runsGiven / topBowler.wickets).toFixed(2)
                             : "-"
-                        }`
-                    ]}
-                />
-            </div>
-            <div
-                style={{
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.5)';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = 'none';
-                }}
-            >
-                <Card
-                    title="Top Allrounder"
-                    player={topAllrounder}
-                    lines={[
-                        `Runs: ${topAllrounder.runs}`,
-                        `Wickets: ${topAllrounder.wickets}`
-                    ]}
-                />
-            </div>
+                    }`
+                ]}
+            />
+
+            <Card
+                title="Top Allrounder"
+                player={topAllrounder}
+                lines={[
+                    `Runs: ${topAllrounder.runs}`,
+                    `Wickets: ${topAllrounder.wickets}`
+                ]}
+            />
         </div>
     );
 };

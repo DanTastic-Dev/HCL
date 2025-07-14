@@ -21,7 +21,7 @@ const App = () => {
                     <Route path="/add" element={<AddPlayerPage />} />
                     <Route path="/players" element={<ViewPlayersPage />} />
                     <Route path="/leaderboard" element={<LeaderboardPage />} />
-                    <Route path="/edit/:id" element={<EditPlayerPage />} /> {/* ✅ Add this */}
+                    <Route path="/edit/:id" element={<EditPlayerPage />} /> 
                 </Routes>
             </div>
         </Router>
