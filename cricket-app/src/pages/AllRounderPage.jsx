@@ -6,7 +6,7 @@ const AllRounderPage = () => {
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const res = await fetch('http://localhost:5000/players');
+                const res = await fetch('https://hcl-production.up.railway.app/players');
                 const data = await res.json();
                 setPlayers(data);
             } catch (err) {

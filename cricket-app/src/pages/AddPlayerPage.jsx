@@ -51,7 +51,7 @@ function AddPlayerPage() {
                 overs: parseFloat(formData.overs)
             };
 
-            const response = await fetch('http://localhost:5000/players/add', {
+            const response = await fetch('https://hcl-production.up.railway.app/players/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ function AddPlayerPage() {
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const response = await fetch('http://localhost:5000/players');
+                const response = await fetch('https://hcl-production.up.railway.app/players');
                 if (response.ok) {
                     const data = await response.json();
                     setPlayers(data);

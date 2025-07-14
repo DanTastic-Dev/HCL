@@ -17,7 +17,7 @@ const PlayerTable = ({ players, setPlayers }) => {
         if (!input) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/players/${id}`, {
+            const response = await fetch(`https://hcl-production.up.railway.app/players/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'x-admin-password': input
@@ -55,7 +55,7 @@ const PlayerTable = ({ players, setPlayers }) => {
     if (!input) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/players/${id}`, {
+        const res = await fetch(`https://hcl-production.up.railway.app/players/${id}`, {
             method: "GET",
             headers: {
                 "x-admin-password": input

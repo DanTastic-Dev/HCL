@@ -7,7 +7,7 @@ const ViewPlayersPage = () => {
     const [expandedId, setExpandedId] = useState(null); // 👈 Only one expanded card
 
     useEffect(() => {
-        fetch("http://localhost:5000/players")
+        fetch("https://hcl-production.up.railway.app/players")
             .then(res => res.json())
             .then(data => setPlayers(data))
             .catch(err => console.error("Failed to load players", err));

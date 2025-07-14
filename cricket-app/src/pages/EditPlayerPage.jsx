@@ -11,7 +11,7 @@ function EditPlayerPage() {
     const password = location.state?.password || ""; // ✅ Get password passed from PlayerTable
 
     useEffect(() => {
-    fetch(`http://localhost:5000/players/${id}`, {
+    fetch(`https://hcl-production.up.railway.app/players/${id}`, {
         headers: {
             'x-admin-password': password
         }
@@ -45,7 +45,7 @@ function EditPlayerPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:5000/players/${id}`, {
+            const response = await fetch(`https://hcl-production.up.railway.app/players/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

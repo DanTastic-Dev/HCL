@@ -12,7 +12,7 @@ const HomePage = () => {
   useEffect(() => {
     const hasPlayedIntro = sessionStorage.getItem("hasPlayedIntro");
 
-    fetch("http://localhost:5000/players")
+    fetch("https://hcl-production.up.railway.app/players")
       .then((res) => res.json())
       .then((data) => {
         setPlayers(data);
