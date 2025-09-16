@@ -1,0 +1,51 @@
+import React, { useEffect, useState } from "react";
+import TopPerformers from "../components/TopPerformers";
+import MiniLeaderboard from "../components/MiniLeaderboards";
+import IntroAnimation from "../components/IntroAnimation";
+
+const HomePage = () => {
+  const [players, setPlayers] = useState([]);
+  const [showIntro, setShowIntro] = useState(() => {
+    return sessionStorage.getItem("introPlayed") !== "true";
+  });
+  const [topBatter, setTopBatter] = useState(null);
+  const [topBowler, setTopBowler] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/players")
+      .then((res) => res.json())
+      .then((data) => {
+        setPlayers(data);
+
+        const sortedBatters = [...data].sort((a, b) => b.runs - a.runs);
+        const sortedBowlers = [...data].sort((a, b) => b.wickets - a.wickets);
+
+        setTopBatter(sortedBatters[0]);
+        setTopBowler(sortedBowlers[0]);
+      });
+  }, []);
+
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    sessionStorage.setItem("introPlayed", "true");
+  };
+
+  return (
+    <div style={{ backgroundColor: "#0D1117", color: "#FFFFFF", minHeight: "100vh" }}>
+      {showIntro && topBatter && topBowler ? (
+        <IntroAnimation
+          topBatter={topBatter}
+          topBowler={topBowler}
+          onComplete={handleIntroComplete}
+        />
+      ) : (
+        <>
+          <TopPerformers players={players} />
+          <MiniLeaderboard players={players} />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default HomePage;
